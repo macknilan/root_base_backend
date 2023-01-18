@@ -1,0 +1,118 @@
+version: "3.9"
+
+services:
+    django: &django
+        build:
+            context: .
+            dockerfile: ./docker/local/django/Dockerfile
+        image: rbb_django
+        restart: unless-stopped
+        container_name: rbb_django
+        platform: linux/x86_64
+        depends_on:
+            - postgres
+            - mailhog
+            - redis
+        volumes:
+            - .:/app
+            - static_volume:/app/staticfiles
+            - media_volume:/app/apps/media
+        env_file:
+            - ./.envs/.local/.django
+            - ./.envs/.local/.postgres
+        expose:
+            - "8000"
+        # ports:
+        #     - "8000:8000"
+        networks:
+            network_root_base_backend:
+                ipv4_address: 172.18.0.2
+        command: /start
+
+    postgres:
+        build:
+            context: .
+            dockerfile: ./docker/local/postgres/Dockerfile
+        image: rbb_postgres
+        restart: unless-stopped
+        container_name: rbb_postgres
+        volumes:
+            - rbb_postgres_data:/var/lib/postgresql/data
+            - rbb_postgres_data_backups:/backups
+        env_file:
+            - ./.envs/.local/.postgres
+        networks:
+            network_root_base_backend:
+                ipv4_address: 172.18.0.3
+
+    mailhog:
+        image: mailhog/mailhog:v1.0.0
+        container_name: rbb_mailhog
+        ports:
+            - "8025:8025"
+        networks:
+            network_root_base_backend:
+                ipv4_address: 172.18.0.4
+
+    redis:
+        image: redis:latest
+        container_name: rbb_redis
+        networks:
+            network_root_base_backend:
+                ipv4_address: 172.18.0.5
+
+    celeryworker:
+        <<: *django
+        image: rbb_celery_worker
+        container_name: rbb_celery_worker
+        depends_on:
+            - redis
+            - postgres
+            - mailhog
+        ports: []
+        command: /start-celeryworker
+        networks:
+            network_root_base_backend:
+                ipv4_address: 172.18.0.6
+
+    flower:
+        <<: *django
+        image: rbb_flower
+        container_name: rbb_flower
+        ports:
+            - "5555:5555"
+        command: /start-flower
+        networks:
+            network_root_base_backend:
+                ipv4_address: 172.18.0.7
+
+    nginx:
+        restart: always
+        depends_on:
+            - django
+        container_name: rbb_nginx
+        volumes:
+            - static_volume:/app/staticfiles
+            - media_volume:/app/apps/media
+        build:
+            context: ./docker/local/nginx
+            dockerfile: Dockerfile
+        ports:
+            - "8080:80"
+        networks:
+            network_root_base_backend:
+                ipv4_address: 172.18.0.8
+
+networks:
+    network_root_base_backend:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.18.0.0/24
+
+
+volumes:
+    rbb_postgres_data: {}
+    rbb_postgres_data_backups: {}
+    static_volume:
+    media_volume:
