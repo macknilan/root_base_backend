@@ -70,4 +70,3 @@ Levantar el contenedor de `django`
 docker compose -f local.yml run --rm --service-ports django
 ```
 
-> ESTE PROYECTO SE DEPRECA PARA ELIMINAR DEPENDENCIAS Y HACER OTRA ESTRUCTURA QUE NO CONTENGA PLANTILLAS HTML 👋
