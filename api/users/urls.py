@@ -3,16 +3,17 @@
 # Django
 from django.urls import include, path
 
-# Django REST Framework
-from rest_framework.routers import DefaultRouter
-
 # Views
-from .views import users as user_views
+from api.users.views import users as v
 
-router = DefaultRouter()
+detail_user = {"get": "retrieve"}
 
-router.register(r'users', user_views.UserViewSet, basename='users')
+urlpatterns = []
 
-urlpatterns = [
-    path('', include(router.urls))
+urlpatterns += [
+    path(
+        "users/<int:pk>/",
+        v.UserView.as_view({**detail_user}),
+        name="user",
+    ),
 ]
