@@ -33,10 +33,10 @@ TODO: Check if it is possible to work both at the same time.
 
 urlpatterns = [
     path("", include(users_urls)),
-    path("reg/", include("dj_rest_auth.registration.urls")),
-    path("auth/", include("dj_rest_auth.urls")),
-    path("auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("registration/", include("dj_rest_auth.registration.urls")),
+    path("authentication/", include("dj_rest_auth.urls")),
+    path("authentication/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("authentication/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     re_path(r"^swagger/$", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     re_path(r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),

@@ -18,7 +18,7 @@ from api.users.serializers.users import (
     UserModelSerializer,
     DetailUserSerializer,
     UserProfileModelSerializer,
-    UpdateUserSerializer
+    UpdateUserSerializer,
 )
 
 # Models
@@ -30,6 +30,7 @@ class UserDetailView(viewsets.GenericViewSet):
 
     Get user with profile.
     """
+
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserModelSerializer
 
@@ -62,6 +63,7 @@ class UserUpgradeView(viewsets.GenericViewSet):
 
     Get user with profile.
     """
+
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserModelSerializer
     parser_classes = (MultiPartParser, FormParser)
@@ -84,26 +86,28 @@ class UserUpgradeView(viewsets.GenericViewSet):
             return Response(data_body.errors, status=status.HTTP_400_BAD_REQUEST)
 
         first_name = data_body.validated_data["first_name"]
-        last_name = data_body.validated_data["last_name"]
-        phone_number = data_body.validated_data["phone_number"]
-        biography = data_body.validated_data["biography"]
-        picture = data_body.validated_data["picture"]
+        last_name = (
+            data_body.validated_data["last_name"] if data_body.validated_data["last_name"] is not None else None
+        )
+        phone_number = (
+            data_body.validated_data["phone_number"] if data_body.validated_data["phone_number"] is not None else None
+        )
+        biography = (
+            data_body.validated_data["biography"] if data_body.validated_data["biography"] is not None else None
+        )
+        picture = data_body.validated_data["picture"] if data_body.validated_data["picture"] is not None else None
         user_id = self.request.auth.payload.get("user_id")
+
         try:
             with transaction.atomic():
                 User.objects.filter(id=user_id).update(
-                    first_name=first_name,
-                    last_name=last_name,
-                    phone_number=phone_number
+                    first_name=first_name, last_name=last_name, phone_number=phone_number
                 )
                 get_user_updated = User.objects.get(id=user_id)
 
                 obj, upt_cre = Profile.objects.update_or_create(
                     user=get_user_updated,
-                    defaults={
-                        "biography": biography,
-                        "picture": picture
-                    },
+                    defaults={"biography": biography, "picture": picture},
                 )
         except IntegrityError as error:
             raise APIException(code=status.HTTP_400_BAD_REQUEST, detail=error.__str__())

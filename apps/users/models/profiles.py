@@ -20,7 +20,6 @@ class Profile(TimeStampedModel):
 
     picture = models.ImageField(
         _("profile picture"),
-        # default="Add image url which is you want ...",
         blank=True,
         max_length=100,
         null=True,
@@ -28,7 +27,8 @@ class Profile(TimeStampedModel):
     )
     biography = models.TextField(
         _("About your profile"),
-        default="Update your bio ...",
+        blank=True,
+        null=True,
         help_text=_("A small biography about the user"),
         max_length=500,
     )

@@ -36,7 +36,7 @@ class User(TimeStampedModel, AbstractUser):
         message=_("Phone number must be entered in the format: +00 (000) 000-0000"),
     )
 
-    phone_number = models.CharField(validators=[phone_regex], max_length=20, blank=True)
+    phone_number = models.CharField(validators=[phone_regex], max_length=20, blank=True, null=True)
 
     # https://docs.djangoproject.com/en/4.1/topics/auth/customizing/#django.contrib.auth.models.CustomUser.USERNAME_FIELD
     USERNAME_FIELD = "email"

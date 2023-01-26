@@ -65,19 +65,24 @@ class UpdateUserSerializer(serializers.Serializer):
     """
     first_name = serializers.CharField(min_length=6, max_length=150, required=True, help_text="Nombre")
     last_name = serializers.CharField(min_length=6, max_length=150, required=False, help_text="Apellido")
-    phone_number = serializers.CharField(min_length=10, max_length=20, required=False, help_text=PHONE_FORMAT)
+    phone_number = serializers.CharField(
+        max_length=20,
+        required=False,
+        help_text=PHONE_FORMAT,
+        allow_null=True
+    )
     biography = serializers.CharField(
-        min_length=15,
         max_length=150,
         required=False,
-        help_text="descripción del la persona"
+        help_text="descripción del la persona",
+        allow_null=True
     )
     picture = serializers.ImageField(
         max_length=20,
         required=False,
         help_text="Imagen del usuario",
-        allow_empty_file=False,
-        allow_null=False,
+        allow_empty_file=True,
+        allow_null=True,
     )
 
     def validate_picture(self, data):
@@ -86,6 +91,8 @@ class UpdateUserSerializer(serializers.Serializer):
         :param data:
         :return: data
         """
+        if data is None:
+            return data
 
         if data.size > 2 * 1024 * 1024:
             raise serializers.ValidationError("Image size should not be larger than 2mb")

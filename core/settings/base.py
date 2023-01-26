@@ -85,17 +85,17 @@ THIRD_PARTY_APPS = [
     # My third party pass
     "rest_framework",
     "rest_framework.authtoken",
+    "allauth",
+    "allauth.account",
+    # "allauth.socialaccount",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
+    "drf_yasg",
+    "corsheaders",
     "django_filters",
     "django_countries",
     "phonenumber_field",
-    "drf_yasg",
-    "corsheaders",
     "djcelery_email",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "dj_rest_auth",
-    "dj_rest_auth.registration",
 ]
 
 LOCAL_APPS = [
@@ -328,16 +328,24 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         # "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-        "dj_rest_auth.jwt_auth.JWTCookieAuthentication"
-        # "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # "rest_framework.authentication.TokenAuthentication",
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
 
 
 # drf-yasg - https://drf-yasg.readthedocs.io/en/stable/security.html
 # -------------------------------------------------------------------------------
-SWAGGER_SETTINGS = {"SECURITY_DEFINITIONS": {"Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"}}}
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
 
 
 # dj-rest-auth - https://dj-rest-auth.readthedocs.io/en/latest/index.html
